@@ -1,0 +1,3 @@
+{
+    "mongoURI": "mongodb+srv://shubhamlal:shubhamlal@cluster0.twrgo9g.mongodb.net/vendorApp?retryWrites=true&w=majority&appName=Cluster0"
+}
