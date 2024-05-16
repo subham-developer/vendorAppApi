@@ -1,13 +1,13 @@
 import express from "express";
 const app = express();
 import bodyParser from "body-parser";
-import upload from './config/uploadImg';
+import upload from './config/uploadImg.js';
 import 'dotenv/config';
 import ExcelJs from "exceljs";
 import PDFDocument from "pdfkit";
 import fs from "fs";
-import routes from './Routes/index';
-import { connectDB } from "./config/db";
+import routes from './Routes/index.js';
+import { connectDB } from "./config/db.js";
 
 connectDB();
 

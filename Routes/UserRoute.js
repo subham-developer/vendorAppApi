@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 const router = express.Router();
-import { addUser, getUser, getUserById, updateUserById, deleteUserById } from '../Controller/User.controller';
+import { addUser, getUser, getUserById, updateUserById, deleteUserById } from '../Controller/User.controller.js';
 
 
 router.get('/get-userById/:user_id', getUserById);

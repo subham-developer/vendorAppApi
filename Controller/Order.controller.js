@@ -1,6 +1,6 @@
-import Order from "../Model/Order.model";
-import Product from "../Model/Product.model";
-import User from "../Model/user.model";
+import Order from "../Model/Order.model.js";
+import Product from "../Model/Product.model.js";
+import User from "../Model/User.model.js";
 // import User from "../Model/User.model";
 // import Product from "../Model/Product.model";
 

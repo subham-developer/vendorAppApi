@@ -1,5 +1,5 @@
 import express from 'express';
-import { ConvertExcelToPDF } from '../Controller/ConvertExcelToPdf.controller';
+import { ConvertExcelToPDF } from '../Controller/ConvertExcelToPdf.controller.js';
 
 const router = express.Router();
 
