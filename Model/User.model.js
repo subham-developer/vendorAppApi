@@ -7,21 +7,43 @@ const userSchema = mongoose.Schema({
     usertype: {
         type: String,
         enum: ['Vendor', 'Client'],
+        default: 'Client'
     },
     email:{
         type: String,
-        unique: [true, "Email Id is already in use."],
+        // unique: [true, "Email Id is already in use."],
     },
     contactno:{
         type: Number,
         // unique: [true, "Phone number is already in use."],
     },
+    vendorList:[{
+        productId:{
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'Product' 
+        },
+        vendorName: {
+            type: String
+        },
+        vendorContactNo: {
+            type: String
+        },
+        price:{
+            type: String
+        }
+    }],
     status: {
         type: Boolean,
         default: 0
     }
 
 },{ timestamps: true});
+
+// userSchema.virtual('amount', {
+//     ref: 'Product',
+//     localField: '_id',
+//     foreignField: 'productId'
+//   });
 const User = mongoose.model('User', userSchema);
 
 export default User;

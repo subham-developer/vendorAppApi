@@ -8,6 +8,8 @@ import PDFDocument from "pdfkit";
 import fs from "fs";
 import routes from './Routes/index.js';
 import { connectDB } from "./config/db.js";
+import path from 'path';
+const __dirname = path.resolve();
 
 connectDB();
 
@@ -33,7 +35,7 @@ app.post('/uploadImage', upload.single('profileImage'), function (req, res, next
     res.send('File Uploaded Successfully......!!!!!');
   })
 
-
+app.use('/productImages',express.static(path.join(__dirname, 'uploaded')));
 app.use('/api', routes);
 // app.use('/users', (req, res)=>{
 //     console.log(req.body);

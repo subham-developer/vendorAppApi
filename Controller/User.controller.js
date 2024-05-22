@@ -4,14 +4,15 @@ import User from "../Model/User.model.js";
 export const addUser = async(req, res) =>{
 
     try{
-        const {username, usertype, email, contactno} = req.body;
-        const checkEmailExist = await User.findOne({email});
-        if(!checkEmailExist){
+        const {username, usertype, vendorList, contactno} = req.body;
+        const checkContactNoExist = await User.findOne({contactno});
+        if(!checkContactNoExist){ 
             const saveUser = new User({
                 username: username,
                 usertype: usertype,
-                email: email,
+                // email: email,
                 contactno: contactno,
+                vendorList: vendorList,
                 status: 1
             });
             const response = await saveUser.save();
@@ -25,13 +26,42 @@ export const addUser = async(req, res) =>{
         console.error(err.message);
         return res.status(500).send({msg: err.message});
     }
-    
+}
+
+export const assignVendorToClients = async(req, res) =>{ 
+    try{
+        const {clientId, price, productId, vendorName, vendorContactNo} = req.body;
+        if(!clientId){
+            return res.status(400).json({ errors: [{ msg: 'Client Id is required' }] });
+        }
+        const checkClientExist = await User.findById(clientId);
+        // console.log('checkClientExist',checkClientExist);
+        if(!checkClientExist){
+            return res.status(400).json({ errors: [{ msg: 'Client does not exist' }] });
+        }else{
+            const saveUser = {
+                productId: productId,
+                vendorName: vendorName,
+                vendorContactNo: vendorContactNo,
+                price: price,
+                // email: email,
+            };
+            const response = await checkClientExist.vendorList.unshift(saveUser);
+            const saveVendors = await checkClientExist.save();
+            console.log('response',saveVendors.vendorList);
+            return res.send({status: 200, vendors: saveVendors.vendorList, message:'Vendor Saved!!'});
+        }
+    }catch(err){
+        console.error(err.message);
+        return res.status(500).send({msg: err.message});
+    }
 }
 
 export const getUser = async(req,res) => {
     // {contactno:0} means to exclude
     // {contactno:1} means to include
-    let users = await User.find({},{contactno:0}).sort({createdAt: -1});
+    let users = await User.find({},{createdAt: 0, updatedAt: 0, __v: 0}).populate('vendorList.productId',{createdAt: 0, updatedAt: 0, __v: 0}).sort({createdAt: -1}).exec();
+    console.log('users',users);
     const totalUser =  await User.find().count();
     return res.send({status: 200, totalUser: totalUser, users: users, message:'Successfull !!'});
 }
@@ -43,12 +73,13 @@ export const getUserById = async(req,res) => {
         // console.log('user_id',user_id)
         // console.log('id',req.query.id)
         const users = await User.findOne({_id:user_id});
+        let totalVendorsAssigned = users.vendorList.length;
         console.log('users', users);
         if(!users){
             return res.send({status: 400, message:'User Not Found !!'});
            
         }else{
-            return res.send({status: 200, users: users, message:'Successfull !!'});
+            return res.send({status: 200, 'totalVendorsAssigned': totalVendorsAssigned, users: users, message:'Successfull !!'});
         }
     }catch(err){
         console.error(err.message);

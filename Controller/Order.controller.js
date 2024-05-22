@@ -7,21 +7,28 @@ import User from "../Model/User.model.js";
 
 export const addOrders = async(req, res) => {
     try {
-        const { userId, productId, quantity, status } = req.body;
+        const { userId, vendorId, productId, quantity, status } = req.body;
         // let date = new Date().toISOString;
-        const UserId = await User.findOne({_id:userId});
-        const getProductId = await Product.findOne({_id:productId});
-        console.log(UserId,getProductId);
-        if(!UserId && UserId == null || !getProductId && getProductId == null){
-            return res.status(404).json({message: "User or Product not found"});
+        // Check if Vendor is available inside vendorList Array 
+        const UserId = await User.findOne({_id:userId, 'vendorList._id': vendorId});
+        console.log('UserId',UserId);
+        // exit();
+        if(!UserId || UserId == null){
+            return res.status(404).json({ message: "Vendor Is not Registered" });
         }
-        const getUserId = await Order.findOne({userId, productId});
+        
+        // const getProductId = await Product.findOne({_id:productId});
+        // console.log(UserId,getProductId);
+        // if(!UserId && UserId == null || !getProductId && getProductId == null){
+        //     return res.status(404).json({message: "User or Product not found"});
+        // }
+        const getUserId = await Order.findOne({userId, vendorId});
         console.log('getUserId', getUserId);
         if(!getUserId || getUserId == null){
             try{
                 const order = new Order({
                     userId,
-                    productId,
+                    vendorId,
                     quantity,
                     status
                 });
@@ -73,17 +80,23 @@ export const getAllOrders = async(req,res) =>{
     try{
         const orderId = req.params.orderId;
         if(orderId){
-            const order = await Order.findById(orderId).populate('userId',{
+            let order = await Order.findById(orderId).populate('userId',{
                 createdAt: 0,
                 updatedAt: 0,
-                __v: 0
-            }).populate('productId',{
-                createdAt: 0,
-                updatedAt: 0,
+                // vendorList: 0,
                 __v: 0
             });
+            console.log(order.userId);
+            let quantity = order.quantity;
+            let vendorDetails = await order.userId.vendorList.filter((vendor)=>{
+                return vendor._id.toString() === order.vendorId[0];
+            })
+            console.log(order);
+            let billAmount = Number(vendorDetails[0].price * quantity);
+            // let billAmount = 0;
+            console.log('billAmount',billAmount);
             if(order){
-                return res.status(200).json(order);
+                return res.status(200).json({'billAmount': billAmount, 'orderDetails': order});
             }else{
                 return res.status(400).json({ msg: 'OrderId Not Found' });
             }
@@ -96,7 +109,7 @@ export const getAllOrders = async(req,res) =>{
                 createdAt: 0,
                 updatedAt: 0,
                 __v: 0
-            }).populate('productId',{
+            }).populate('vendorId.vendorList',{
                 createdAt: 0,
                 updatedAt: 0,
                 __v: 0
