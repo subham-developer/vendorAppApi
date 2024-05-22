@@ -1,15 +1,25 @@
 import User from "../Model/User.model.js";
+import bcrypt from "bcrypt";
 
 
 export const addUser = async(req, res) =>{
 
     try{
-        const {username, usertype, vendorList, contactno} = req.body;
+        const {username, usertype, vendorList, password, contactno} = req.body;
         const checkContactNoExist = await User.findOne({contactno});
+        // Generating Password
+        const saltRounds = 10;
+        // const myPlaintextPassword = 's0/\/\P4$$w0rD';
+        const hash = await bcrypt.hashSync(password, saltRounds);
+        const hassPassword = "$2b$10$8hYnkoYTmGtPYxNMqOhxJe53HLzk6TaMkntatbwWsDNInxHlFYLca";
+        const checkPassword  = await bcrypt.compare(password, hassPassword);
+        console.log('checkPassword', checkPassword)
+        console.log('hash',hash)
         if(!checkContactNoExist){ 
             const saveUser = new User({
                 username: username,
                 usertype: usertype,
+                password: hash,
                 // email: email,
                 contactno: contactno,
                 vendorList: vendorList,

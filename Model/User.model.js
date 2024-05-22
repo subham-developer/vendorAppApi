@@ -17,6 +17,9 @@ const userSchema = mongoose.Schema({
         type: Number,
         // unique: [true, "Phone number is already in use."],
     },
+    password:{
+        type: String,
+    },
     vendorList:[{
         productId:{
             type: mongoose.Schema.Types.ObjectId, 

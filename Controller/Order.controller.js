@@ -35,7 +35,7 @@ export const addOrders = async(req, res) => {
                 });
                 const saveOrder = await order.save();
                 console.log('saveOrder', saveOrder);
-                res.status(201).json({ message: "New Order added successfully" });
+                res.status(201).json({ message: "New Order added successfully", 'updatedOrder': saveOrder });
             }catch(err){
                 console.log(err);
                 if (err.kind == 'ObjectId') {
