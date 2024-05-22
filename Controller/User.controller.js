@@ -30,7 +30,7 @@ export const addUser = async(req, res) =>{
 
 export const assignVendorToClients = async(req, res) =>{ 
     try{
-        const {clientId, price, productId, vendorName, vendorContactNo} = req.body;
+        const {clientId, price, productId, productName: productName, vendorName, vendorContactNo} = req.body;
         if(!clientId){
             return res.status(400).json({ errors: [{ msg: 'Client Id is required' }] });
         }
@@ -40,7 +40,7 @@ export const assignVendorToClients = async(req, res) =>{
             return res.status(400).json({ errors: [{ msg: 'Client does not exist' }] });
         }else{
             const saveUser = {
-                productId: productId,
+                productName: productName,
                 vendorName: vendorName,
                 vendorContactNo: vendorContactNo,
                 price: price,

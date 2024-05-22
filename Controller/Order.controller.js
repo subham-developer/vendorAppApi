@@ -11,6 +11,7 @@ export const addOrders = async(req, res) => {
         // let date = new Date().toISOString;
         // Check if Vendor is available inside vendorList Array 
         const UserId = await User.findOne({_id:userId, 'vendorList._id': vendorId});
+        // const UserId = await User.findOne({_id:userId});
         console.log('UserId',UserId);
         // exit();
         if(!UserId || UserId == null){
