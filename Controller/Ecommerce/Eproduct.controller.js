@@ -1,4 +1,4 @@
-import Eproduct from "../../Model/Ecommerce/Eproduct.model";
+import Eproduct from "../../Model/Ecommerce/Eproduct.model.js";
 
 export const addEproduct = async(req, res) =>{
     try {
