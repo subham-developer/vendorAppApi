@@ -36,6 +36,11 @@ const userSchema = mongoose.Schema({
         },
         price:{
             type: String
+        },
+        orderId:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Order',
+            default: null
         }
     }],
     status: {

@@ -82,7 +82,7 @@ export const getUserById = async(req,res) => {
         const user_id = req.params.user_id;
         // console.log('user_id',user_id)
         // console.log('id',req.query.id)
-        const users = await User.findOne({_id:user_id});
+        const users = await User.findOne({_id:user_id}).populate('vendorList.orderId',{createdAt: 0, updatedAt: 0, __v: 0}).sort({createdAt: -1});
         let totalVendorsAssigned = users.vendorList.length;
         console.log('users', users);
         if(!users){

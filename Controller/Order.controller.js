@@ -8,33 +8,49 @@ import User from "../Model/User.model.js";
 export const addOrders = async(req, res) => {
     try {
         const { userId, vendorId, productId, quantity, status } = req.body;
-        // let date = new Date().toISOString;
-        // Check if Vendor is available inside vendorList Array 
+
+        let numQuantity = Number(quantity);
+        let numStatus = Number(status);
+        let totalPrice = 0;
+
         const UserId = await User.findOne({_id:userId, 'vendorList._id': vendorId});
-        // const UserId = await User.findOne({_id:userId});
-        console.log('UserId',UserId);
-        // exit();
+
+        const user = await User.findById({_id:userId});
+        let vendorProductPrice = await user.vendorList.filter((vendor)=>{
+            return vendor._id.toString() === vendorId;
+        })
+        totalPrice = numQuantity * Number(vendorProductPrice[0].price);
+        console.log('vendorDetails.......', totalPrice);
+        console.log('vendorProductPrice.......', Number(vendorProductPrice[0].price));
         if(!UserId || UserId == null){
             return res.status(404).json({ message: "Vendor Is not Registered" });
         }
         
-        // const getProductId = await Product.findOne({_id:productId});
-        // console.log(UserId,getProductId);
-        // if(!UserId && UserId == null || !getProductId && getProductId == null){
-        //     return res.status(404).json({message: "User or Product not found"});
-        // }
+    
         const getUserId = await Order.findOne({userId, vendorId});
-        console.log('getUserId', getUserId);
+        
         if(!getUserId || getUserId == null){
             try{
                 const order = new Order({
-                    userId,
-                    vendorId,
-                    quantity,
-                    status
+                    userId:userId,
+                    vendorId:vendorId,
+                    quantity:numQuantity,
+                    totalPrice: totalPrice,
+                    status:numStatus
                 });
                 const saveOrder = await order.save();
-                console.log('saveOrder', saveOrder);
+                console.log('saveOrder', saveOrder._id);
+                const updateUsers = await User.findOneAndUpdate(
+                    {
+                    _id: userId, 
+                    vendorList: { $elemMatch: { _id: vendorId } }
+                    },
+                    {
+                        $set:{
+                        "vendorList.$.orderId": saveOrder._id
+                        }
+                    },{new: true}
+                )
                 res.status(201).json({ message: "New Order added successfully", 'updatedOrder': saveOrder });
             }catch(err){
                 console.log(err);
@@ -47,17 +63,19 @@ export const addOrders = async(req, res) => {
         }else{
             try{
                 console.log('quantity', getUserId.quantity);
-                const totalQuantity = getUserId.quantity + quantity;
+                const totalQuantity = getUserId.quantity + numQuantity;
+                totalPrice = totalQuantity * Number(vendorProductPrice[0].price);
                 const updatedOrder = await Order.findByIdAndUpdate(getUserId._id, {
                     $set: {
                         quantity: totalQuantity,
-                        status:status
+                        totalPrice: totalPrice,
+                        status:numStatus
                     },
                 //  new: True is to get the update version of the doc
                     },{new: true}); 
                 console.log('updatedOrder', updatedOrder);
                 res.status(201).json({ message: "Order updated successfully", 'updatedOrder': updatedOrder });
-                // return res.status(200).json(updatedOrder);
+
             }catch(err){
                 console.log(err);
                 if (err.kind == 'ObjectId') {

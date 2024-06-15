@@ -24,6 +24,10 @@ const orderSchema = mongoose.Schema({
         type: Date, 
         default: Date.now()
     },
+    totalPrice: {
+        type: Number,
+        default: 0
+    },
     status: {
         type: Boolean,
         default: 0
